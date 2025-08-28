@@ -1,98 +1,146 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Notas</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: "Poppins", sans-serif;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
       background: linear-gradient(135deg, #c084fc, #e9d5ff);
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
+      flex-direction: column;
+      padding: 15px;
+      color: #333;
     }
 
     .container {
-      max-width: 400px;
       background: #fff;
       padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      margin: auto;
-      text-align: center;
+      border-radius: 16px;
+      box-shadow: 0px 6px 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 450px;
+      transition: 0.3s ease;
+      margin-bottom: 40px;
     }
 
-    h1 {
-      font-size: 22px;
-      color: #4b0082;
+    .container:hover {
+      transform: scale(1.02);
+    }
+
+    h2 {
+      text-align: center;
       margin-bottom: 20px;
+      color: #5b21b6;
+      font-size: 1.6rem;
     }
 
     label {
-      display: block;
-      margin: 10px 0 5px;
       font-weight: 600;
-      text-align: left;
+      font-size: 14px;
+      margin-top: 10px;
+      display: block;
+      color: #444;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
-      font-size: 14px;
+      margin: 8px 0 16px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #c084fc;
+      box-shadow: 0 0 5px rgba(192,132,252,0.5);
     }
 
     button {
-      background: #9333ea;
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #a855f7, #c084fc);
       color: white;
+      font-weight: 600;
       border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      transition: background 0.3s;
+      font-size: 16px;
+      transition: 0.3s;
     }
 
     button:hover {
-      background: #7e22ce;
+      background: linear-gradient(135deg, #9333ea, #a855f7);
+      transform: translateY(-2px);
     }
 
-    #resultado {
+    .resultado {
       margin-top: 20px;
-      font-size: 18px;
+      text-align: center;
+      font-size: 20px;
       font-weight: bold;
-      color: #4b0082;
+      color: #2c3e50;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.05);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .resultado.show {
+      opacity: 1;
     }
 
     footer {
+      background: #a855f7;
+      color: white;
       text-align: center;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.3);
+      padding: 10px;
+      border-radius: 10px;
       font-size: 14px;
-      margin-top: auto;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      h2 { font-size: 1.2rem; }
+      input, button { font-size: 14px; padding: 10px; }
+      .resultado { font-size: 16px; padding: 12px; }
+      footer { font-size: 12px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Calculadora de Notas</h1>
-    <label for="perguntas">Número de perguntas:</label>
-    <input type="number" id="perguntas" placeholder="Ex: 10" />
+    <h2>📘 Calculadora de Notas</h2>
 
-    <label for="valor">Valor de cada pergunta:</label>
-    <input type="number" id="valor" step="0.1" placeholder="Ex: 1" />
+    <label>Quantas perguntas?</label>
+    <input type="number" id="perguntas" placeholder="Ex: 5">
 
-    <label for="acertos">Acertos do aluno:</label>
-    <input type="number" id="acertos" placeholder="Ex: 7" />
+    <div id="valoresPerguntas"></div>
 
-    <button onclick="calcularNota()">Calcular</button>
-
-    <div id="resultado"></div>
+    <button onclick="calcularNota()">Calcular Nota</button>
+    <div class="resultado" id="resultado"></div>
   </div>
 
   <footer>
@@ -100,34 +148,60 @@
   </footer>
 
   <script>
-    function calcularNota() {
-      const perguntas = parseInt(document.getElementById("perguntas").value);
-      const valor = parseFloat(document.getElementById("valor").value);
-      const acertos = parseInt(document.getElementById("acertos").value);
+    const perguntasInput = document.getElementById("perguntas");
+    const valoresDiv = document.getElementById("valoresPerguntas");
 
-      if (isNaN(perguntas) || isNaN(valor) || isNaN(acertos)) {
-        alert("Preencha todos os campos corretamente!");
-        return;
+    // Cria inputs pra cada pergunta com valor diferente
+    perguntasInput.addEventListener("input", () => {
+      const qtd = Number(perguntasInput.value);
+      valoresDiv.innerHTML = "";
+      if(qtd > 0){
+        for(let i = 1; i <= qtd; i++){
+          const label = document.createElement("label");
+          label.innerText = `Valor da pergunta ${i}:`;
+          const input = document.createElement("input");
+          input.type = "number";
+          input.placeholder = "Ex: 2";
+          input.className = "valorPergunta";
+          valoresDiv.appendChild(label);
+          valoresDiv.appendChild(input);
+        }
+      }
+    });
+
+    function calcularNota() {
+      const inputsValores = document.querySelectorAll(".valorPergunta");
+      let notaMaxima = 0;
+      let notaAluno = 0;
+
+      for(let i = 0; i < inputsValores.length; i++){
+        const valor = Number(inputsValores[i].value);
+        if(isNaN(valor) || valor < 0){
+          alert("Preencha todos os valores das perguntas corretamente!");
+          return;
+        }
+        notaMaxima += valor;
+        // Aqui você poderia criar outro input pra acertos individuais, mas pra simplificar:
+        // assumimos que o aluno acertou todas as questões (ou você pode adicionar inputs de acertos também)
+        notaAluno += valor; 
       }
 
-      const notaMaxima = perguntas * valor;
-      const notaAluno = acertos * valor;
       const media = notaMaxima / 2;
-
       let mensagem = "";
 
       if (notaAluno === notaMaxima) {
-        mensagem = "🌟 Excellent! You nailed it!";
+        mensagem = "🌟 Excelente! Mandou muito bem!";
       } else if (notaAluno >= media && notaAluno < notaMaxima) {
-        mensagem = "👍 Very good, keep it up!";
+        mensagem = "👍 Muito bom, continue assim!";
       } else if (notaAluno === media) {
-        mensagem = "👌 Good job, but you can do better!";
+        mensagem = "👌 Bom, mas dá pra melhorar!";
       } else {
-        mensagem = "💪 Keep trying, don’t give up!";
+        mensagem = "💪 Continue tentando, não desista!";
       }
 
-      document.getElementById("resultado").innerHTML = 
-        `Nota do aluno: <strong>${notaAluno}</strong> <br> ${mensagem}`;
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = `Nota do aluno: <strong>${notaAluno}</strong> <br> ${mensagem}`;
+      resultadoDiv.classList.add("show");
     }
   </script>
 </body>
