@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Notas</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #c084fc, #e9d5ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #6b21a8;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.2rem;
+      background: #9333ea;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #7e22ce;
+    }
+
+    #resultado {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Notas</h1>
+    <label for="perguntas">Número de Perguntas:</label>
+    <input type="number" id="perguntas" min="1">
+
+    <label for="valor">Valor de cada Pergunta:</label>
+    <input type="number" id="valor" step="0.1" min="0.1">
+
+    <label for="acertos">Número de Acertos:</label>
+    <input type="number" id="acertos" min="0">
+
+    <button onclick="calcularNota()">Calcular Nota</button>
+
+    <div id="resultado"></div>
+  </div>
+
+  <footer>
+    &copy; Criado por Pedro 😊
+  </footer>
+
+  <script>
+    function calcularNota() {
+      const perguntas = parseInt(document.getElementById("perguntas").value);
+      const valor = parseFloat(document.getElementById("valor").value);
+      const acertos = parseInt(document.getElementById("acertos").value);
+
+      if (isNaN(perguntas) || isNaN(valor) || isNaN(acertos)) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+      }
+
+      const notaMaxima = perguntas * valor;
+      const notaAluno = acertos * valor;
+      const media = notaMaxima / 2;
+
+      let mensagem = "";
+
+      if (notaAluno === notaMaxima) {
+        mensagem = "🌟 Excellent! You nailed it!";
+      } else if (notaAluno >= media && notaAluno < notaMaxima) {
+        mensagem = "👍 Very good, keep it up!";
+      } else if (notaAluno === media) {
+        mensagem = "👌 Good job, but you can do better!";
+      } else {
+        mensagem = "💪 Keep trying, don’t give up!";
+      }
+
+      document.getElementById("resultado").innerHTML =
+        `Nota do aluno: <strong>${notaAluno}</strong> <br> ${mensagem}`;
+    }
+  </script>
+</body>
+</html>
